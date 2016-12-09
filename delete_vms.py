@@ -8,14 +8,5 @@ if len(sys.argv) < 2:
 
 config = AzureConfig(sys.argv[1])
     
-arm = AzureResourceManager(
-                           config.subscription_id,
-                           config.username,
-                           config.password,
-                           config.group_name,
-                           config.storage_name,
-                           config.virtual_network_name,
-                           config.subnet_name,
-                           config.region,
-                           skip_setup=True)
+arm = AzureResourceManager(config, skip_setup=True)
 arm.delete_all_vms()
