@@ -270,7 +270,7 @@ class AzureResourceManager():
         result.wait()
         logger.debug('VM created: %s' % name)
         
-    def delete_all_vms(self):
+    def delete_all_vms(self, match=None):
         group_name = self.config.group_name
         network_client = self.network_client
         compute_client = self.compute_client
@@ -280,46 +280,52 @@ class AzureResourceManager():
         network_interfaces = network_client.network_interfaces.list(group_name)
         public_ip_addresses = network_client.public_ip_addresses.list(group_name)
         
+        print 'Match:',match
+        
         results = []
         for x in virtual_machines:
-            logger.debug('Deleting: %s' % x.name)
-            results.append(compute_client.virtual_machines.delete(
-                group_name,
-                x.name
-            ))
+            if not match or match in x.name:
+                logger.debug('Deleting vm: %s' % x.name)
+                results.append(compute_client.virtual_machines.delete(
+                    group_name,
+                    x.name
+                ))
 
         for r in results:
             r.wait()
 
         results = []
         for x in network_security_groups:
-            logger.debug('Deleting: %s' % x.name)
-            results.append(network_client.network_security_groups.delete(
-                group_name,
-                x.name
-            ))
+            if not match or match in x.name:
+                logger.debug('Deleting net sec: %s' % x.name)
+                results.append(network_client.network_security_groups.delete(
+                    group_name,
+                    x.name
+                ))
             
         for r in results:
             r.wait()
         
         results = []
         for x in network_interfaces:
-            logger.debug('Deleting: %s' % x.name)
-            results.append(network_client.network_interfaces.delete(
-                group_name,
-                x.name
-            ))
+            if not match or match in x.name:
+                logger.debug('Deleting net int: %s' % x.name)
+                results.append(network_client.network_interfaces.delete(
+                    group_name,
+                    x.name
+                ))
         
         for r in results:
             r.wait()
         
         results = []
         for x in public_ip_addresses:
-            logger.debug('Deleting: %s' % x.name)
-            results.append(network_client.public_ip_addresses.delete(
-                group_name,
-                x.name
-            ))
+            if not match or match in x.name:
+                logger.debug('Deleting pub ip: %s' % x.name)
+                results.append(network_client.public_ip_addresses.delete(
+                    group_name,
+                    x.name
+                ))
 
         for r in results:
             r.wait()
